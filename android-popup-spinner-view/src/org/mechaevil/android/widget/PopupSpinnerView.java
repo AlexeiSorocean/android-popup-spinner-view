@@ -18,6 +18,7 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -30,7 +31,7 @@ import android.widget.TextView;
  * @author st0le
  */
 public class PopupSpinnerView extends TextView implements OnClickListener,
-        OnItemClickListener, OnDismissListener {
+        OnItemClickListener, OnDismissListener, OnItemSelectedListener {
 
     private PopupWindow pw;
     private ListView lv;
@@ -48,6 +49,8 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
     }
 
     private OnClickListener onClickListener = null;
+    private OnItemClickListener onItemClickListener;
+    private OnItemSelectedListener onItemSelectedListener;
     private int popupHeight, popupWidth;
     private final float[] r = new float[] {10, 10, 10, 10, 10, 10, 10, 10};
     private Drawable myBackgroundDrawable;
@@ -99,6 +102,7 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
             lv.setAdapter(adapter);
             lv.setDividerHeight(1);
             lv.setOnItemClickListener(this);
+            lv.setOnItemSelectedListener(this);
             lv.setLayoutParams(new LayoutParams(LayoutParams.WRAP_CONTENT,
                                                 LayoutParams.WRAP_CONTENT));
             selectedPosition = 0;
@@ -145,11 +149,20 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
             pw.dismiss();
         selectedPosition = arg2;
         refreshView();
+        if(onItemClickListener != null)
+            onItemClickListener.onItemClick(arg0, arg1, arg2, arg3);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> arg0, View arg1, int arg2,
+                               long arg3) {
+        if(onItemSelectedListener != null)
+            onItemSelectedListener.onItemSelected(arg0, arg1, arg2, arg3);
     }
 
     private class PopupListItem {
-        private String text;
-        private int resId;
+        private final String text;
+        private final int resId;
 
         public PopupListItem(String text) {
             this.text = text;
@@ -259,7 +272,7 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
         }
         refreshView();
     }
-    
+
     @Override
     public void setTextSize(float size) {
         super.setTextSize(size);
@@ -269,6 +282,25 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
     @Override
     public void onDismiss() {
         pw = null;
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0) {
+        if(onItemSelectedListener != null)
+            onItemSelectedListener.onNothingSelected(arg0);
+    }
+
+    @Override
+    public void setOnClickListener(OnClickListener onClickListener) {
+        this.onClickListener = onClickListener;
+    }
+
+    public void setOnItemClickListener(OnItemClickListener onItemClickListener) {
+        this.onItemClickListener = onItemClickListener;
+    }
+
+    public void setOnItemSelectedListener(OnItemSelectedListener onItemSelectedListener) {
+        this.onItemSelectedListener = onItemSelectedListener;
     }
 
 }
