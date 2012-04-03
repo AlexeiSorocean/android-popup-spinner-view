@@ -38,16 +38,6 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
     private PopupListItemAdapter adapter;
     private List<PopupListItem> list;
     private int selectedPosition;
-
-    public int getSelectedPosition() {
-        return selectedPosition;
-    }
-
-    public void setSelectedPosition(int selectedPosition) {
-        this.selectedPosition = selectedPosition;
-        refreshView();
-    }
-
     private OnClickListener onClickListener = null;
     private OnItemClickListener onItemClickListener;
     private OnItemSelectedListener onItemSelectedListener;
@@ -79,7 +69,7 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
         setGravity(Gravity.CENTER_VERTICAL);
         setTextSize(textSize);
         setTextColor(Color.BLACK);
-        setOnClickListener(this);
+        super.setOnClickListener(this);
         setBackgroundDrawable(myBackgroundDrawable);
         popupHeight = 200;
         popupWidth = 50;
@@ -109,18 +99,21 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
         }
         else {
             selectedPosition = -1;
+            this.adapter = null;
         }
         refreshView();
     }
 
     private void refreshView() {
-        PopupListItem popupListItem = adapter.getItem(selectedPosition);
-        setText(popupListItem.toString());
-        if(popupListItem.getResId() != -1)
-            setCompoundDrawablesWithIntrinsicBounds(popupListItem.getResId(),
-                                                    0,
-                                                    0,
-                                                    0);
+        if(adapter != null) {
+            PopupListItem popupListItem = adapter.getItem(selectedPosition);
+            setText(popupListItem.toString());
+            if(popupListItem.getResId() != -1)
+                setCompoundDrawablesWithIntrinsicBounds(popupListItem.getResId(),
+                                                        0,
+                                                        0,
+                                                        0);
+        }
     }
 
     @Override
@@ -303,4 +296,12 @@ public class PopupSpinnerView extends TextView implements OnClickListener,
         this.onItemSelectedListener = onItemSelectedListener;
     }
 
+    public int getSelectedPosition() {
+        return selectedPosition;
+    }
+
+    public void setSelectedPosition(int selectedPosition) {
+        this.selectedPosition = selectedPosition;
+        refreshView();
+    }
 }
